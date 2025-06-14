@@ -6,7 +6,7 @@ export function handle(req: Request, res: Response) {
   const handle = handleThing()
     .filter((plan: Plan) => plan.price > 0)
     .reduce((acc: Plan[], plan: Plan) => {
-      if (plan.highlight && plan.price < 100) {
+      if (plan.price < 0) {
         acc.push({ ...plan, name: plan.name.toUpperCase() });
       }
       return acc;
