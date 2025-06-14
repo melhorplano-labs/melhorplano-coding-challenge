@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { getPlans, highlightPlan } from "../controllers/planController";
+import { handleThing } from "../controllers/planController";
 
 const router = Router();
 
-router.get("/", getPlans);
-router.patch(":id/highlight", highlightPlan);
+router.get("/", handleThing);
 
 export default router;
