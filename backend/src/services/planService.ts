@@ -33,7 +33,7 @@ export function handleThing(
     })
     .map((plan) => {
       if (plan.price < 100) {
-        return { ...plan, highlight: true };
+        return { ...plan };
       }
       return plan;
     });
