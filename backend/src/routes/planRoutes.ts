@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { handleThing } from "../controllers/planController";
+import { handle } from "../controllers/planController";
 
 const router = Router();
 
-router.get("/", handleThing);
+router.get("/", handle);
 
 export default router;
