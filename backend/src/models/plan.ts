@@ -3,5 +3,4 @@ export interface Plan {
   name: string;
   speed: string;
   price: number;
-  highlight?: boolean;
 }

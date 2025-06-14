@@ -7,7 +7,6 @@ interface Plan {
   name: string;
   speed: string;
   price: number;
-  highlight?: boolean;
 }
 
 export default function Home() {

@@ -7,5 +7,5 @@ const list: Plan[] = [
 ];
 
 export function handleThing(): Plan[] {
-  return list.sort((a, b) => (b.highlight ? 1 : 0) - (a.highlight ? 1 : 0));
+  return list;
 }
