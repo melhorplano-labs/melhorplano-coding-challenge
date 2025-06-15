@@ -10,7 +10,7 @@ Aqui você encontrará a estrutura inicial de um sistema de consulta de planos d
 
 As instruções detalhadas do desafio serão enviadas separadamente pelo time da MelhorPlano.net. Este repositório contém apenas a base do projeto para que você possa focar nas implementações solicitadas.
 
-## Estrutura do Projeto
+## Estrutura do projeto
 
 ```
 melhorplano-coding-challenge/
