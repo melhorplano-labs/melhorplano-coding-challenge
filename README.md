@@ -2,7 +2,7 @@
 
 Este repositório é a base para o teste técnico in house de desenvolvimento da MelhorPlano.net, utilizado como parte do nosso processo seletivo para diferentes níveis de senioridade (júnior, pleno, sênior).
 
-## Sobre o projeto
+## Sobre o projetoeee
 
 Aqui você encontrará a estrutura inicial de um sistema de consulta de planos de internet, com backend em Node.js/Express e frontend em Next.js, ambos utilizando TypeScript. O objetivo é avaliar suas habilidades técnicas, organização de código e capacidade de resolução de problemas.
 
