@@ -19,4 +19,17 @@ describe("recommendPlans", () => {
       result.recommendedPlans[1]?.score || 0
     );
   });
+
+  test("should prioritize plans within budget", () => {
+    const preferences: PlanRecommendationPreferences = {
+      city: "São Paulo",
+      budget: 80,
+    };
+
+    const result = recommendPlans(preferences, 5);
+
+    result.recommendedPlans.forEach((rec) => {
+      expect(rec.plan.price).toBeLessThanOrEqual(80);
+    });
+  });
 });
