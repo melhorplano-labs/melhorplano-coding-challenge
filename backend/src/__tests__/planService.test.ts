@@ -32,4 +32,21 @@ describe("recommendPlans", () => {
       expect(rec.plan.price).toBeLessThanOrEqual(80);
     });
   });
+
+  test("should prioritize plans matching usage profile", () => {
+    const preferences: PlanRecommendationPreferences = {
+      city: "São Paulo",
+      usageProfile: "light",
+    };
+  
+    const result = recommendPlans(preferences, 5);
+  
+    const hasCompatiblePlan = result.recommendedPlans.some(
+      (rec) => rec.plan.dataCap <= 300
+    );
+    expect(hasCompatiblePlan).toBe(true);
+  
+    expect(result.recommendedPlans[0].plan.dataCap).toBeLessThanOrEqual(300);
+  });
+
 });
