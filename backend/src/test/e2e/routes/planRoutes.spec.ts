@@ -59,6 +59,80 @@ describe("planRoutes", () => {
 
       expect(hasDuplicatedPlans).toBe(false);
       expect(filteredPlansMock.length).toBe(plans.length);
+      expect(plans).toEqual([
+        {
+          city: "São Paulo",
+          dataCap: 120,
+          id: 19,
+          name: "Vivo Light 60",
+          operator: "Vivo",
+          price: 59.9,
+          speed: "60Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 200,
+          id: 1,
+          name: "Plano Básico",
+          operator: "Vivo",
+          price: 79.9,
+          speed: "100Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 220,
+          id: 16,
+          name: "Vivo Conecta+",
+          operator: "Vivo",
+          price: 89.9,
+          speed: "120Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 700,
+          id: 17,
+          name: "Vivo Família 400",
+          operator: "Vivo",
+          price: 129.9,
+          speed: "400Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 900,
+          id: 14,
+          name: "Vivo Família Plus",
+          operator: "Vivo",
+          price: 139.9,
+          speed: "600Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 1200,
+          id: 12,
+          name: "Vivo Max",
+          operator: "Vivo",
+          price: 179.9,
+          speed: "800Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 1400,
+          id: 20,
+          name: "Vivo Max 900",
+          operator: "Vivo",
+          price: 189.9,
+          speed: "900Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 2200,
+          id: 18,
+          name: "Vivo Ultra 2Gbps",
+          operator: "Vivo",
+          price: 299.9,
+          speed: "2Gbps",
+        },
+      ]);
     });
 
     it("should obtain the plans in ascending order", async () => {
@@ -77,6 +151,80 @@ describe("planRoutes", () => {
 
       expect(plans.length).toBeGreaterThan(1);
       expect(isInAscendingOrder).toBe(true);
+      expect(plans).toEqual([
+        {
+          city: "São Paulo",
+          dataCap: 120,
+          id: 19,
+          name: "Vivo Light 60",
+          operator: "Vivo",
+          price: 59.9,
+          speed: "60Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 200,
+          id: 1,
+          name: "Plano Básico",
+          operator: "Vivo",
+          price: 79.9,
+          speed: "100Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 220,
+          id: 16,
+          name: "Vivo Conecta+",
+          operator: "Vivo",
+          price: 89.9,
+          speed: "120Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 700,
+          id: 17,
+          name: "Vivo Família 400",
+          operator: "Vivo",
+          price: 129.9,
+          speed: "400Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 900,
+          id: 14,
+          name: "Vivo Família Plus",
+          operator: "Vivo",
+          price: 139.9,
+          speed: "600Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 1200,
+          id: 12,
+          name: "Vivo Max",
+          operator: "Vivo",
+          price: 179.9,
+          speed: "800Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 1400,
+          id: 20,
+          name: "Vivo Max 900",
+          operator: "Vivo",
+          price: 189.9,
+          speed: "900Mbps",
+        },
+        {
+          city: "São Paulo",
+          dataCap: 2200,
+          id: 18,
+          name: "Vivo Ultra 2Gbps",
+          operator: "Vivo",
+          price: 299.9,
+          speed: "2Gbps",
+        },
+      ]);
     });
   });
 });
