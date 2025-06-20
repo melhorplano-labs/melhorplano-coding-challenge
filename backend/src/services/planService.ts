@@ -238,7 +238,10 @@ export function handleThing(
 
 export function filterPlans(plans: Plan[], filter: PlanSearchFilters): Plan[] {
   return plans.filter((plan) => {
-    if (filter.minSpeed != null && parsePlanSpeed(plan) < filter.minSpeed) {
+    if (
+      filter.minSpeed != null &&
+      parsePlanSpeed(plan.speed) < filter.minSpeed
+    ) {
       return false;
     }
 
