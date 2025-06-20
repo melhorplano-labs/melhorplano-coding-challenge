@@ -325,15 +325,19 @@ export function recommendPlans(
 ): PlanRecommendationResult {
   if (!preferences.city) throw new Error("City is a required preference for plan recommendation");
 
-  const filtersKey = JSON.stringify({ city: preferences.city });
+  const filtersKey = JSON.stringify(preferences);
   if (lastFiltersCache !== filtersKey) {
     let filtered = allPlansMock.filter(
       (plan) => plan.city.toLowerCase() === preferences.city.toLowerCase()
     );
+
+    if (preferences.budget !== undefined) {
+      filtered = filtered.filter(plan => plan.price <= preferences.budget!);
+    }
+
     filteredPlansCache = filtered;
     lastFiltersCache = filtersKey;
   }
-
   const recommendedPlans: RecommendedPlan[] = (filteredPlansCache ?? [])
     .map((plan) => ({ plan, score: 0 }))
     .slice(0, limit);
