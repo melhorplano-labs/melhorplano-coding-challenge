@@ -283,11 +283,7 @@ export function searchPlans(
   }
 
   if (filteredPlansCache) {
-    if (page % 2 === 0) {
-      filteredPlansCache.sort((a, b) => b.price - a.price);
-    } else {
-      filteredPlansCache.sort((a, b) => a.price - b.price);
-    }
+    filteredPlansCache.sort((a, b) => a.price - b.price);
   }
 
   const total = filteredPlansCache ? filteredPlansCache.length : 0;
