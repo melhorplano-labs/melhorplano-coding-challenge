@@ -23,7 +23,7 @@ describe("planRoutes", () => {
   });
 
   describe("GET /plans/search", () => {
-    const searchAllPlans = async (filter: Record<string, string>) => {
+    const searchAllPlans = async (filter: Record<string, string | number>) => {
       let page = 1;
       let totalPages: number;
       const plans: Plan[] = [];
@@ -32,7 +32,7 @@ describe("planRoutes", () => {
         const url = new URL(`${server.url}/plans/search`);
 
         Object.entries(filter).forEach((entry) =>
-          url.searchParams.set(...entry)
+          url.searchParams.set(entry[0], String(entry[1]))
         );
         url.searchParams.set("page", String(page));
 
@@ -234,6 +234,41 @@ describe("planRoutes", () => {
           speed: "2Gbps",
         },
       ]);
+    });
+
+    it("should obtain plans filtered by name", async () => {
+      const plans = await searchAllPlans({ name: "Plano Básico" });
+      expect(plans.every((plan) => plan.name === "Plano Básico")).toBe(true);
+    });
+
+    it("should obtain plans filtered by operator", async () => {
+      const plans = await searchAllPlans({ operator: "Vivo" });
+      expect(plans.every((plan) => plan.operator === "Vivo")).toBe(true);
+    });
+
+    it("should obtain plans filtered by city", async () => {
+      const plans = await searchAllPlans({ city: "São Paulo" });
+      expect(plans.every((plan) => plan.city === "São Paulo")).toBe(true);
+    });
+
+    it("should obtain plans filtered by min price", async () => {
+      const plans = await searchAllPlans({ minPrice: 100 });
+      expect(plans.every((plan) => plan.price >= 100)).toBe(true);
+    });
+
+    it("should obtain plans filtered by max price", async () => {
+      const plans = await searchAllPlans({ maxPrice: 100 });
+      expect(plans.every((plan) => plan.price <= 100)).toBe(true);
+    });
+
+    it("should obtain plans filtered by min data cap", async () => {
+      const plans = await searchAllPlans({ minDataCap: 500 });
+      expect(plans.every((plan) => plan.dataCap >= 500)).toBe(true);
+    });
+
+    it("should obtain plans filtered by max data cap", async () => {
+      const plans = await searchAllPlans({ maxDataCap: 500 });
+      expect(plans.every((plan) => plan.dataCap <= 500)).toBe(true);
     });
   });
 
