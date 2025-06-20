@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Plan } from "../models/plan";
 import { findPreferences } from "../services/planPreferencesService";
 import {
   PlanSearchFilters,
@@ -11,18 +10,9 @@ import {
 
 export function allPlans(req: Request, res: Response) {
   const plans = getPlans()
-    .map((plan: Plan) => {
-      if (plan.price) {
-        return { ...plan, name: plan.name.toUpperCase() };
-      }
-      return null;
-    })
-    .reduce((acc: Plan[], plan) => {
-      if (plan && plan.price) {
-        acc.push(plan);
-      }
-      return acc;
-    }, []);
+    .filter((plan) => !!plan.price)
+    .map((plan) => ({ ...plan, name: plan.name.toUpperCase() }));
+
   res.json(plans);
 }
 
