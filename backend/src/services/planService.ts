@@ -301,3 +301,48 @@ export function searchPlans(
     totalPages,
   };
 }
+
+export interface PlanRecommendationPreferences {
+  city: string; // Cidade obrigatória
+  budget?: number; // Orçamento máximo
+  usageProfile?: "light" | "moderate" | "heavy"; // Perfil de uso
+  preferredOperator?: string; // Operadora preferida
+}
+
+export interface RecommendedPlan {
+  plan: Plan;
+  score: number;
+}
+
+export interface PlanRecommendationResult {
+  recommendedPlans: RecommendedPlan[];
+  topRecommendation: RecommendedPlan | null;
+}
+
+export function recommendPlans(
+  preferences: PlanRecommendationPreferences,
+  limit: number = 5
+): PlanRecommendationResult {
+  if (!preferences.city) throw new Error("City is a required preference for plan recommendation");
+
+  const filtersKey = JSON.stringify({ city: preferences.city });
+  if (lastFiltersCache !== filtersKey) {
+    let filtered = allPlansMock.filter(
+      (plan) => plan.city.toLowerCase() === preferences.city.toLowerCase()
+    );
+    filteredPlansCache = filtered;
+    lastFiltersCache = filtersKey;
+  }
+
+  const recommendedPlans: RecommendedPlan[] = (filteredPlansCache ?? [])
+    .map((plan) => ({ plan, score: 0 }))
+    .slice(0, limit);
+
+  const topRecommendation =
+    recommendedPlans.length > 0 ? recommendedPlans[0] : null;
+
+  return {
+    recommendedPlans,
+    topRecommendation,
+  };
+}
