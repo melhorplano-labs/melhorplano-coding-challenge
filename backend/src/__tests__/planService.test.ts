@@ -69,4 +69,14 @@ describe("recommendPlans", () => {
     }
   });
 
+  test("should throw error if city is not provided", () => {
+    const preferences: PlanRecommendationPreferences = {
+      city: "",
+    };
+
+    expect(() => recommendPlans(preferences)).toThrow(
+      "City is a required preference for plan recommendation"
+    );
+  });
+
 });
