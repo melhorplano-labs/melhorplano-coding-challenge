@@ -1,0 +1,52 @@
+{
+  "recommendedPlans": [
+      {
+          "plan": {
+              "id": 1,
+              "name": "Plano Básico",
+              "speed": "100Mbps",
+              "price": 79.9,
+              "operator": "Vivo",
+              "city": "São Paulo",
+              "dataCap": 200
+          },
+          "score": 19
+      },
+      {
+          "plan": {
+              "id": 16,
+              "name": "Vivo Conecta+",
+              "speed": "120Mbps",
+              "price": 89.9,
+              "operator": "Vivo",
+              "city": "São Paulo",
+              "dataCap": 220
+          },
+          "score": 19
+      },
+      {
+          "plan": {
+              "id": 19,
+              "name": "Vivo Light 60",
+              "speed": "60Mbps",
+              "price": 59.9,
+              "operator": "Vivo",
+              "city": "São Paulo",
+              "dataCap": 120
+          },
+          "score": 19
+      }
+  ],
+  "topRecommendation": {
+      "plan": {
+          "id": 1,
+          "name": "Plano Básico",
+          "speed": "100Mbps",
+          "price": 79.9,
+          "operator": "Vivo",
+          "city": "São Paulo",
+          "dataCap": 200
+      },
+      "score": 19
+  }
+}
