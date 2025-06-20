@@ -207,35 +207,6 @@ export function getAllPlans(): Plan[] {
   return allPlansMock;
 }
 
-export function handleThing(
-  plans: Plan[],
-  minSpeed?: number,
-  maxPrice?: number
-): Plan[] {
-  return plans
-    .filter((plan) => {
-      if (minSpeed) {
-        const speedValue = parseInt(plan.speed.replace("Mbps", ""));
-        if (parsePlanSpeed(plan.speed) < minSpeed) {
-          return false;
-        }
-      }
-      return true;
-    })
-    .filter((plan) => {
-      if (maxPrice && plan.price > maxPrice) {
-        return false;
-      }
-      return true;
-    })
-    .map((plan) => {
-      if (plan.price < 100) {
-        return { ...plan };
-      }
-      return plan;
-    });
-}
-
 export function filterPlans(plans: Plan[], filter: PlanSearchFilters): Plan[] {
   return plans.filter((plan) => {
     if (
