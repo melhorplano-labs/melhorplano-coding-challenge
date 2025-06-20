@@ -49,4 +49,24 @@ describe("recommendPlans", () => {
     expect(result.recommendedPlans[0].plan.dataCap).toBeLessThanOrEqual(300);
   });
 
+  test("should give bonus to preferred operator", () => {
+    const preferences: PlanRecommendationPreferences = {
+      city: "São Paulo",
+      preferredOperator: "Vivo",
+    };
+
+    const result = recommendPlans(preferences, 5);
+
+    const vivoPlan = result.recommendedPlans.find(
+      (rec) => rec.plan.operator === "Vivo"
+    );
+    const nonVivoPlan = result.recommendedPlans.find(
+      (rec) => rec.plan.operator !== "Vivo"
+    );
+
+    if (vivoPlan && nonVivoPlan) {
+      expect(vivoPlan.score).toBeGreaterThan(nonVivoPlan.score);
+    }
+  });
+
 });
