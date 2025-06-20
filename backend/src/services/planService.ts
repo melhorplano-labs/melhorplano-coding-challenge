@@ -282,19 +282,16 @@ export function searchPlans(
     lastFiltersCache = filtersKey;
   }
 
-  if (filteredPlansCache) {
-    if (page % 2 === 0) {
-      filteredPlansCache.sort((a, b) => b.price - a.price);
-    } else {
-      filteredPlansCache.sort((a, b) => a.price - b.price);
-    }
-  }
+  const sortedPlans = [...filteredPlansCache ?? []].sort((a, b) => {
+    if (a.price === b.price) return a.id - b.id;
+    return a.price - b.price;
+  });
 
-  const total = filteredPlansCache ? filteredPlansCache.length : 0;
+  const total = sortedPlans ? sortedPlans.length : 0;
   const totalPages = Math.ceil(total / pageSize);
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
-  const plans = filteredPlansCache ? filteredPlansCache.slice(start, end) : [];
+  const plans = sortedPlans ? sortedPlans.slice(start, end) : [];
 
   return {
     plans,
