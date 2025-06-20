@@ -1,17 +1,13 @@
-import styles from "../styles/Home.module.scss";
+import { Plan } from "../models/plan";
 
-interface Plan {
-  id: number;
-  name: string;
-  speed: string;
-  price: number;
-  operator: string;
-  city: string;
-  dataCap: number;
-  benefits?: string[];
-}
+export default function PlanCard({
+  plan,
+}: {
+  plan: Plan & { benefits?: string[]; preferencesMatchRate?: number };
+}) {
+  const isRecommended =
+    !!plan.preferencesMatchRate && plan.preferencesMatchRate >= 90;
 
-export default function PlanCard({ plan }: { plan: Plan }) {
   return (
     <div
       style={{
@@ -33,24 +29,53 @@ export default function PlanCard({ plan }: { plan: Plan }) {
       <div
         style={{
           width: "100%",
-          background: "#f5f6fa",
           padding: "18px 0 10px 0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           borderBottom: "1px solid #eee",
+          ...(isRecommended
+            ? {
+                background: "linear-gradient(90deg, #00b38f 60%, #00997a 100%)",
+                color: "#fff",
+              }
+            : {
+                background: "#f5f6fa",
+                color: "#222",
+              }),
         }}
       >
         <span
           style={{
             fontSize: 18,
             fontWeight: 700,
-            color: "#222",
             letterSpacing: 0.5,
           }}
         >
           {plan.name}
         </span>
+
+        {plan.preferencesMatchRate && (
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: 0.5,
+              textAlign: "center",
+            }}
+          >
+            {isRecommended && (
+              <>
+                Combina com você!
+                <br />
+              </>
+            )}
+
+            <span style={{ fontWeight: 400, fontSize: 12 }}>
+              ({plan.preferencesMatchRate}% de compatibilidade)
+            </span>
+          </span>
+        )}
       </div>
 
       {/* Bloco de Velocidade */}
@@ -93,7 +118,7 @@ export default function PlanCard({ plan }: { plan: Plan }) {
       </div>
 
       {/* Benefícios */}
-      {plan.benefits && plan.benefits.length > 0 && (
+      {"benefits" in plan && plan.benefits && plan.benefits.length > 0 && (
         <ul
           style={{
             margin: 0,
