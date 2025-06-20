@@ -1,6 +1,10 @@
 import { Plan } from "../models/plan";
+import {
+  PlanPreferences,
+  PlanPreferencesFields,
+} from "../models/planPreferences";
 
-export const allPlansMock: Plan[] = [
+const defaultPlansMock = [
   {
     id: 1,
     name: "Plano Básico",
@@ -183,6 +187,18 @@ export const allPlansMock: Plan[] = [
   },
 ];
 
+export const allPlansMock: Plan[] = [...defaultPlansMock];
+
+export function mockPlans(plan: Plan[]) {
+  allPlansMock.splice(0);
+  allPlansMock.push(...plan);
+}
+
+export function resetPlans() {
+  allPlansMock.splice(0);
+  allPlansMock.push(...defaultPlansMock);
+}
+
 export function getPlans(): Plan[] {
   return allPlansMock;
 }
@@ -291,6 +307,108 @@ export function searchPlans(
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   const plans = filteredPlansCache ? filteredPlansCache.slice(start, end) : [];
+
+  return {
+    plans,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  };
+}
+
+export async function getRecommendedPlans(
+  preferences: PlanPreferences | null,
+  page: number,
+  pageSize: number
+) {
+  const noResults = {
+    plans: [],
+    total: 0,
+    page,
+    pageSize,
+    totalPages: 0,
+  };
+
+  if (!preferences) return noResults;
+
+  const preferenceFields = Object.entries(preferences).filter(
+    ([key]) => key !== "id" && key !== "userId"
+  );
+  if (preferenceFields.every(([, value]) => value == null)) return noResults;
+
+  const allPlans = getAllPlans();
+
+  const checkRange = (
+    value: number,
+    min: number | null,
+    max: number | null
+  ) => {
+    if (min == null && max == null) return null;
+    return value >= (min ?? 0) && value <= (max ?? Infinity);
+  };
+
+  const checkText = (preference: string | null, plan: string) => {
+    if (preference === null) return null;
+    return preference === plan;
+  };
+
+  const plansWithMatches = allPlans
+    .map((plan) => {
+      const matches: Record<PlanPreferencesFields, boolean | null> = {
+        city: checkText(preferences.city, plan.city),
+        operator: checkText(preferences.operator, plan.operator),
+        dataCap: checkRange(
+          plan.dataCap,
+          preferences.minDataCap,
+          preferences.maxDataCap
+        ),
+        price: checkRange(
+          plan.price,
+          preferences.minPrice,
+          preferences.maxPrice
+        ),
+      };
+
+      const totalFields = Object.keys(matches).length;
+      const ratePerField = 100 / totalFields;
+      const rateSubtractedPerNeutral = ratePerField * 0.1;
+
+      let rate = 100;
+
+      if (Object.values(matches).every((value) => value !== true)) {
+        rate = 0;
+      } else {
+        Object.values(matches).forEach((value) => {
+          if (value === false) rate -= ratePerField;
+          if (value === null) rate -= rateSubtractedPerNeutral;
+        });
+      }
+
+      Object.entries(matches).forEach(([key, value]) => {
+        if (value == null) matches[key as PlanPreferencesFields] = false;
+      });
+
+      return {
+        ...plan,
+        preferencesMatchRate: Math.ceil(rate),
+        preferencesMatches: matches,
+      };
+    })
+    .filter((plan) => plan.preferencesMatchRate > 0)
+    .sort((a, b) => {
+      if (a.preferencesMatchRate === b.preferencesMatchRate) {
+        return a.price - b.price;
+      }
+
+      return b.preferencesMatchRate - a.preferencesMatchRate;
+    });
+
+  const total = plansWithMatches.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const plans = plansWithMatches.slice(start, end);
 
   return {
     plans,

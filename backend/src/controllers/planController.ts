@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
+import { Plan } from "../models/plan";
+import { findPreferences } from "../services/planPreferencesService";
 import {
+  PlanSearchFilters,
   getPlans,
+  getRecommendedPlans,
   handleThing,
   searchPlans,
-  PlanSearchFilters,
 } from "../services/planService";
-import { Plan } from "../models/plan";
 
 export function allPlans(req: Request, res: Response) {
   const plans = getPlans()
@@ -62,4 +64,17 @@ export function planSearch(req: Request, res: Response) {
   const paginated = searchPlans(filters, Number(page), Number(pageSize));
 
   res.json(paginated);
+}
+
+export async function recommendedPlans(req: Request, res: Response) {
+  // TODO: get authenticated user
+  const userId = 1;
+
+  const pageSize = Number(req.query.pageSize ?? 3);
+  const page = Number(req.query.page ?? 1);
+
+  const preferences = await findPreferences(userId);
+  const result = await getRecommendedPlans(preferences, page, pageSize);
+
+  return res.json(result);
 }
