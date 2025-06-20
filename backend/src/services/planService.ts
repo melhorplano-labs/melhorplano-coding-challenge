@@ -319,11 +319,19 @@ export interface PlanRecommendationResult {
   topRecommendation: RecommendedPlan | null;
 }
 
+const DATA_CAP_LIGHT_MAX = 300;
+const DATA_CAP_MODERATE_MAX = 800;
+
+const SCORE_BUDGET = 10;
+const SCORE_OPERATOR = 5;
+const SCORE_USAGE_PROFILE = 4;
+
 export function recommendPlans(
   preferences: PlanRecommendationPreferences,
   limit: number = 5
 ): PlanRecommendationResult {
-  if (!preferences.city) throw new Error("City is a required preference for plan recommendation");
+  if (!preferences.city)
+    throw new Error("City is a required preference for plan recommendation");
 
   const filtersKey = JSON.stringify(preferences);
   if (lastFiltersCache !== filtersKey) {
@@ -338,12 +346,38 @@ export function recommendPlans(
     filteredPlansCache = filtered;
     lastFiltersCache = filtersKey;
   }
+
   const recommendedPlans: RecommendedPlan[] = (filteredPlansCache ?? [])
-    .map((plan) => ({ plan, score: 0 }))
+    .map((plan) => {
+      let score = 0;
+
+      score += SCORE_BUDGET;
+
+      if (
+        preferences.preferredOperator &&
+        plan.operator.toLowerCase() === preferences.preferredOperator.toLowerCase()
+      ) {
+        score += SCORE_OPERATOR;
+      }
+
+      if (preferences.usageProfile === "light" && plan.dataCap <= DATA_CAP_LIGHT_MAX) {
+        score += SCORE_USAGE_PROFILE;
+      } else if (
+        preferences.usageProfile === "moderate" &&
+        plan.dataCap > DATA_CAP_LIGHT_MAX &&
+        plan.dataCap <= DATA_CAP_MODERATE_MAX
+      ) {
+        score += SCORE_USAGE_PROFILE;
+      } else if (preferences.usageProfile === "heavy" && plan.dataCap > DATA_CAP_MODERATE_MAX) {
+        score += SCORE_USAGE_PROFILE;
+      }
+
+      return { plan, score };
+    })
+    .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 
-  const topRecommendation =
-    recommendedPlans.length > 0 ? recommendedPlans[0] : null;
+  const topRecommendation = recommendedPlans.length > 0 ? recommendedPlans[0] : null;
 
   return {
     recommendedPlans,
