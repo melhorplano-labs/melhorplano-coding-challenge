@@ -2,6 +2,7 @@ import { Plan } from "../../../models/plan";
 import {
   allPlansMock,
   mockPlans,
+  parsePlanSpeed,
   resetPlans,
 } from "../../../services/planService";
 import { mockServer, ServerMock } from "../../mocks/server";
@@ -233,6 +234,26 @@ describe("planRoutes", () => {
           speed: "2Gbps",
         },
       ]);
+    });
+  });
+
+  describe("GET /plans/filtered", () => {
+    it("should get plans filtered by min speed", async () => {
+      const url = new URL(`${server.url}/plans/filtered`);
+      url.searchParams.set("minSpeed", "500");
+      const response = await fetch(url);
+      const data = (await response.json()) as Plan[];
+      expect(data.every((plan) => parsePlanSpeed(plan.speed) >= 500)).toBe(
+        true
+      );
+    });
+
+    it("should get plans filtered by max price", async () => {
+      const url = new URL(`${server.url}/plans/filtered`);
+      url.searchParams.set("maxPrice", "100");
+      const response = await fetch(url);
+      const data = (await response.json()) as Plan[];
+      expect(data.every((plan) => plan.price <= 100)).toBe(true);
     });
   });
 

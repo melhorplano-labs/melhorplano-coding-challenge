@@ -216,7 +216,7 @@ export function handleThing(
     .filter((plan) => {
       if (minSpeed) {
         const speedValue = parseInt(plan.speed.replace("Mbps", ""));
-        if (speedValue < minSpeed) {
+        if (parsePlanSpeed(plan.speed) < minSpeed) {
           return false;
         }
       }
@@ -256,6 +256,19 @@ export interface PaginatedPlans {
 
 let filteredPlansCache: Plan[] | null = null;
 let lastFiltersCache: string | null = null;
+
+export function parsePlanSpeed(plan: Plan) {
+  const unit = plan.speed.replace(/\d/g, "");
+  const amountInMbps = parseInt(plan.speed.replace(/\D/g, ""));
+
+  const multiplier =
+    {
+      Mbps: 1,
+      Gbps: 1000,
+    }[unit] ?? 1;
+
+  return multiplier * amountInMbps;
+}
 
 export function searchPlans(
   filters: PlanSearchFilters,
