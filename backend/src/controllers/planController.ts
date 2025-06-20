@@ -3,7 +3,10 @@ import {
   getPlans,
   handleThing,
   searchPlans,
+  recommendPlans,
   PlanSearchFilters,
+  PlanRecommendationResult,
+  PlanRecommendationPreferences,
 } from "../services/planService";
 import { Plan } from "../models/plan";
 
@@ -62,4 +65,22 @@ export function planSearch(req: Request, res: Response) {
   const paginated = searchPlans(filters, Number(page), Number(pageSize));
 
   res.json(paginated);
+}
+
+export function recommendPlansHandler(req: Request, res: Response) {
+  try {
+    const preferences: PlanRecommendationPreferences = req.body;
+    if (!preferences.city) {
+      res.status(400).json({ error: "City is a required field" });
+      return;
+    }
+    const result: PlanRecommendationResult = recommendPlans(preferences);
+    res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
