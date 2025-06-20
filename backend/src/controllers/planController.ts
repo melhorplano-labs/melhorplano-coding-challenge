@@ -3,9 +3,9 @@ import { Plan } from "../models/plan";
 import { findPreferences } from "../services/planPreferencesService";
 import {
   PlanSearchFilters,
+  filterPlans,
   getPlans,
   getRecommendedPlans,
-  handleThing,
   searchPlans,
 } from "../services/planService";
 
@@ -34,7 +34,7 @@ export function filteredPlans(req: Request, res: Response) {
     ? parseFloat(req.query.maxPrice as string)
     : undefined;
   const plans = getPlans();
-  const filtered = handleThing(plans, minSpeed, maxPrice);
+  const filtered = filterPlans(plans, { minSpeed, maxPrice });
   res.json(filtered);
 }
 

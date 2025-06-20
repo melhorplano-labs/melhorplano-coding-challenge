@@ -236,6 +236,53 @@ export function handleThing(
     });
 }
 
+export function filterPlans(plans: Plan[], filter: PlanSearchFilters): Plan[] {
+  return plans.filter((plan) => {
+    if (filter.minSpeed != null && parsePlanSpeed(plan) < filter.minSpeed) {
+      return false;
+    }
+
+    if (filter.maxPrice != null && plan.price > filter.maxPrice) {
+      return false;
+    }
+
+    if (filter.minPrice != null && plan.price < filter.minPrice) {
+      return false;
+    }
+
+    if (filter.minDataCap != null && plan.dataCap < filter.minDataCap) {
+      return false;
+    }
+
+    if (filter.maxDataCap != null && plan.dataCap > filter.maxDataCap) {
+      return false;
+    }
+
+    if (
+      filter.city != null &&
+      filter.city.toLowerCase() !== plan.city.toLowerCase()
+    ) {
+      return false;
+    }
+
+    if (
+      filter.operator != null &&
+      filter.operator.toLowerCase() !== plan.operator.toLowerCase()
+    ) {
+      return false;
+    }
+
+    if (
+      filter.name != null &&
+      filter.name.toLowerCase() !== plan.name.toLowerCase()
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
 export interface PlanSearchFilters {
   minPrice?: number;
   maxPrice?: number;
@@ -244,6 +291,7 @@ export interface PlanSearchFilters {
   operator?: string;
   city?: string;
   name?: string;
+  minSpeed?: number;
 }
 
 export interface PaginatedPlans {
@@ -257,9 +305,9 @@ export interface PaginatedPlans {
 let filteredPlansCache: Plan[] | null = null;
 let lastFiltersCache: string | null = null;
 
-export function parsePlanSpeed(plan: Plan) {
-  const unit = plan.speed.replace(/\d/g, "");
-  const amountInMbps = parseInt(plan.speed.replace(/\D/g, ""));
+export function parsePlanSpeed(speed: string) {
+  const unit = speed.replace(/\d/g, "");
+  const amountInMbps = parseInt(speed.replace(/\D/g, ""));
 
   const multiplier =
     {
@@ -278,35 +326,8 @@ export function searchPlans(
   const filtersKey = JSON.stringify(filters);
 
   if (lastFiltersCache !== filtersKey) {
-    let filtered = allPlansMock;
-    if (filters.minPrice !== undefined) {
-      filtered = filtered.filter((plan) => plan.price >= filters.minPrice!);
-    }
-    if (filters.maxPrice !== undefined) {
-      filtered = filtered.filter((plan) => plan.price <= filters.maxPrice!);
-    }
-    if (filters.minDataCap !== undefined) {
-      filtered = filtered.filter((plan) => plan.dataCap >= filters.minDataCap!);
-    }
-    if (filters.maxDataCap !== undefined) {
-      filtered = filtered.filter((plan) => plan.dataCap <= filters.maxDataCap!);
-    }
-    if (filters.operator) {
-      filtered = filtered.filter(
-        (plan) =>
-          plan.operator.toLowerCase() === filters.operator!.toLowerCase()
-      );
-    }
-    if (filters.city) {
-      filtered = filtered.filter(
-        (plan) => plan.city.toLowerCase() === filters.city!.toLowerCase()
-      );
-    }
-    if (filters.name) {
-      filtered = filtered.filter((plan) =>
-        plan.name.toLowerCase().includes(filters.name!.toLowerCase())
-      );
-    }
+    let filtered = filterPlans(allPlansMock, filters);
+
     filteredPlansCache = filtered;
     lastFiltersCache = filtersKey;
   }
