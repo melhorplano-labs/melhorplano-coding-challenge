@@ -18,7 +18,7 @@ export function allPlans(req: Request, res: Response) {
       return null;
     })
     .reduce((acc: Plan[], plan) => {
-      if (plan && !plan.price) {
+      if (plan && plan.price) {
         acc.push(plan);
       }
       return acc;
