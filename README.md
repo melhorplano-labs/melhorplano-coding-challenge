@@ -54,4 +54,4 @@ O frontend irá rodar por padrão na porta **3000**.
 
 Consulte a documentação oficial das ferramentas utilizadas (Node.js, Express, Next.js, TypeScript) e siga as orientações enviadas pelo time do MelhorPlano.net.
 
-Boa sorte!
+O que não te desafia, não te transforma! 🚀 Boa sorte!
