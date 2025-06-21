@@ -1,3 +1,17 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #b2dfdb;
+  background: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: border 0.2s;
+
+  &:focus {
+    border: 2px solid #009688;
+  }
+}

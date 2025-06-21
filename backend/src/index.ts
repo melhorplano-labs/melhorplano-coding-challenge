@@ -1,18 +1,24 @@
-import express from "express";
-import cors from "cors";
-import planRoutes from "./routes/planRoutes";
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.use("/plans", planRoutes);
-
-app.get("/healthcheck", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
+import { createApp } from "./app";
+import { createPlanController } from "./controllers/planController";
+import { createPlanPreferencesController } from "./controllers/planPreferencesController";
+import { createInMemoryPlanPreferencesService } from "./services/inMemoryPlanPreferencesService";
+import { createInMemoryPlanService } from "./services/inMemoryPlanService";
 
 const PORT = process.env.PORT || 3001;
+
+const planService = createInMemoryPlanService();
+const planPreferencesService = createInMemoryPlanPreferencesService();
+
+const planController = createPlanController(
+  planService,
+  planPreferencesService
+);
+const planPreferencesController = createPlanPreferencesController(
+  planPreferencesService
+);
+
+const app = createApp(planController, planPreferencesController);
+
 app.listen(PORT, () => {
   console.log(`Backend rodando na porta ${PORT}`);
 });
