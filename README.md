@@ -24,11 +24,11 @@ melhorplano-coding-challenge/
 
 ## Como rodar o projeto
 
-### 1. Clonar o repositório
+### 1. Fork do repositório
 
 ```bash
-git clone https://github.com/melhorplano/melhorplano-coding-challenge.git
-cd melhorplano-coding-challenge
+Acesse: [https://github.com/melhorplano-labs/melhorplano-coding-challenge](https://github.com/melhorplano-labs/melhorplano-coding-challenge)
+Clique em **Fork** no canto superior direito para criar uma cópia na sua conta do GitHub.
 ```
 
 ### 2. Rodar o Backend
