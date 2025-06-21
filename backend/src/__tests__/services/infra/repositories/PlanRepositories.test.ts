@@ -1,6 +1,55 @@
-import { Plan } from "../domain/entities/Plan";
+import { Plan } from "../../../../domain/entities/Plan";
+import { LocalPlanRepository } from "../../../../infra/repositories/LocalPlanRepository";
 
-export const allPlansMock: Plan[] = [
+
+describe("Plan Repositories", () => {
+  test("should return all plans when calling getAllPlans", () => {
+    const { planRepository } = makeSut();
+    const result = planRepository.getAllPlans();
+    expect(result).toEqual(allPlansMock);
+  });
+
+  test("should return all plans when calling getPlans", () => {
+    const { planRepository } = makeSut();
+    const result = planRepository.getPlans();
+    expect(result).toEqual(allPlansMock);
+  });
+
+  test("should return filtered plans by city", () => {
+    const { planRepository } = makeSut();
+    const filters = { city: "São Paulo" };
+    const result = planRepository.filterPlans(filters);
+    const expected = allPlansMock.filter(plan => plan.city === "São Paulo");
+    expect(result).toEqual(expected);
+  });
+
+  test("should return filtered plans by operator", () => {
+    const { planRepository } = makeSut();
+    const filters = { operator: "Claro" };
+    const result = planRepository.filterPlans(filters);
+    const expected = allPlansMock.filter(plan => plan.operator === "Claro");
+    expect(result).toEqual(expected);
+  });
+
+  test("should return filtered plans by city and operator", () => {
+    const { planRepository } = makeSut();
+    const filters = { city: "São Paulo", operator: "Vivo" };
+    const result = planRepository.filterPlans(filters);
+    const expected = allPlansMock.filter(plan =>
+      plan.city === "São Paulo" && plan.operator === "Vivo"
+    );
+    expect(result).toEqual(expected);
+  });
+
+  test("should return empty list if no plan matches filter", () => {
+    const { planRepository } = makeSut();
+    const filters = { city: "Londres", operator: "TIM" }; // cidade inexistente
+    const result = planRepository.filterPlans(filters);
+    expect(result).toEqual([]);
+  });
+});
+
+const allPlansMock: Plan[] = [
   {
     id: 1,
     name: "Plano Básico",
@@ -183,6 +232,9 @@ export const allPlansMock: Plan[] = [
   },
 ];
 
-export class PlanModel {
-  static storage: Plan[] = allPlansMock
+const makeSut = () => {
+  const planRepository = new LocalPlanRepository(allPlansMock)
+  return {
+    planRepository
+  }
 }

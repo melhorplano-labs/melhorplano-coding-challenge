@@ -1,16 +1,27 @@
-import { Router } from "express";
-import {
-  allPlans,
-  filteredPlans,
-  planSearch,
-  recommendPlansHandler
-} from "../controllers/planController";
+import { Router } from 'express';
+import { createPlanController, PlanController } from '../controllers/planController';
 
-const router = Router();
+/**
+ * Configura as rotas para operações relacionadas a planos.
+ * @returns Um roteador Express configurado com as rotas de planos.
+ */
+export function createPlanRoutes(): Router {
+  const router = Router();
+  const planController = createPlanController();
 
-router.get("/", allPlans);
-router.get("/filtered", filteredPlans);
-router.get("/search", planSearch);
-router.post("/recommend", recommendPlansHandler);
+  // Obtém todos os planos disponíveis
+  router.get('/', planController.allPlans.bind(planController));
 
-export default router;
+  // Filtra planos por critérios como velocidade mínima e preço máximo
+  router.get('/filtered', planController.filteredPlans.bind(planController));
+
+  // Busca planos com filtros e paginação
+  router.get('/search', planController.planSearch.bind(planController));
+
+  // Recomenda planos com base nas preferências do usuário
+  router.post('/recommend', planController.recommendPlans.bind(planController));
+
+  return router;
+}
+
+export default createPlanRoutes();
