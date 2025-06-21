@@ -1,8 +1,11 @@
 import { PlanController } from "../contracts/controllers/planController";
+import { PlanPreferencesService } from "../contracts/services/planPreferencesService";
 import { PlanFilter, PlanService } from "../contracts/services/planService";
-import { findPreferences } from "../services/planPreferencesService";
 
-export function createPlanController(planService: PlanService): PlanController {
+export function createPlanController(
+  planService: PlanService,
+  planPreferencesService: PlanPreferencesService
+): PlanController {
   return {
     async plans(_req) {
       const result = await planService.findPlans({
@@ -69,7 +72,7 @@ export function createPlanController(planService: PlanService): PlanController {
       const pageSize = Number(req.query.pageSize ?? 3);
       const page = Number(req.query.page ?? 1);
 
-      const preferences = await findPreferences(userId);
+      const preferences = await planPreferencesService.findPreferences(userId);
       const result = await planService.findRecommendedPlans({
         preferences,
         page,

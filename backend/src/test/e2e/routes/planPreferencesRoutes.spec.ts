@@ -1,4 +1,3 @@
-import { clearAllPreferencesMock } from "../../../services/planPreferencesService";
 import { App, mockApp } from "../../mocks/app";
 import { mockServer, ServerMock } from "../../mocks/server";
 
@@ -16,7 +15,7 @@ describe("planPreferencesRoutes", () => {
   });
 
   beforeEach(() => {
-    clearAllPreferencesMock();
+    app.planPreferencesService.preferences.splice(0);
   });
 
   const input = {
