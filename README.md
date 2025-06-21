@@ -26,7 +26,7 @@ melhorplano-coding-challenge/
 
 ### 1. Fork do repositório
 
-Acesse o repositório do desafio [clicando aqui](https://github.com/melhorplano-labs/melhorplano-coding-challenge) e clique em **Fork** no canto superior direito para criar uma cópia na sua conta do GitHub.
+Clique em **Fork** no canto superior direito para criar uma cópia na sua conta do GitHub.
 
 ### 2. Rodar o Backend
 
