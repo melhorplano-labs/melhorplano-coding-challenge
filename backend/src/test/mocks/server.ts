@@ -1,5 +1,5 @@
+import type { Express } from "express";
 import { Server } from "node:http";
-import { makeApp } from "../../app";
 
 export type ServerMock = {
   server: Server;
@@ -7,8 +7,8 @@ export type ServerMock = {
   close: () => Promise<void>;
 };
 
-export const mockServer = (port = 3001): ServerMock => {
-  const server = makeApp().listen(port);
+export const mockServer = (app: Express, port = 3001): ServerMock => {
+  const server = app.listen(port);
 
   return {
     server,

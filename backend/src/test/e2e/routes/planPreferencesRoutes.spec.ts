@@ -1,11 +1,14 @@
 import { clearAllPreferencesMock } from "../../../services/planPreferencesService";
+import { App, mockApp } from "../../mocks/app";
 import { mockServer, ServerMock } from "../../mocks/server";
 
 describe("planPreferencesRoutes", () => {
   let server: ServerMock;
+  let app: App;
 
   beforeAll(() => {
-    server = mockServer();
+    app = mockApp();
+    server = mockServer(app.app);
   });
 
   afterAll(async () => {

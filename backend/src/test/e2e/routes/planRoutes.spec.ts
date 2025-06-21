@@ -1,21 +1,23 @@
-import { Plan } from "../../../models/plan";
-import {
-  allPlansMock,
-  mockPlans,
-  parsePlanSpeed,
-  resetPlans,
-} from "../../../services/planService";
+import { parseSpeed, Plan } from "../../../models/plan";
+import { DEFAULT_PLANS } from "../../../services/inMemoryPlanService";
+import { App, mockApp } from "../../mocks/app";
 import { mockServer, ServerMock } from "../../mocks/server";
 
 describe("planRoutes", () => {
+  let app: App;
   let server: ServerMock;
 
   beforeAll(() => {
-    server = mockServer();
+    app = mockApp();
+    server = mockServer(app.app);
   });
 
   beforeEach(() => {
-    resetPlans();
+    app.planService.plans.splice(
+      0,
+      app.planService.plans.length,
+      ...DEFAULT_PLANS
+    );
   });
 
   afterAll(async () => {
@@ -62,7 +64,7 @@ describe("planRoutes", () => {
       const uniquePlanIds = new Set(planIds);
       const hasDuplicatedPlans = planIds.length !== uniquePlanIds.size;
 
-      const filteredPlansMock = allPlansMock.filter(
+      const filteredPlansMock = app.planService.plans.filter(
         (plan) => plan.operator === "Vivo" && plan.city === "São Paulo"
       );
 
@@ -278,9 +280,7 @@ describe("planRoutes", () => {
       url.searchParams.set("minSpeed", "500");
       const response = await fetch(url);
       const data = (await response.json()) as Plan[];
-      expect(data.every((plan) => parsePlanSpeed(plan.speed) >= 500)).toBe(
-        true
-      );
+      expect(data.every((plan) => parseSpeed(plan.speed) >= 500)).toBe(true);
     });
 
     it("should get plans filtered by max price", async () => {
@@ -326,44 +326,46 @@ describe("planRoutes", () => {
     });
 
     it("should return plans based on user preferences", async () => {
-      mockPlans([
-        {
-          id: 1,
-          city: "City A",
-          dataCap: 10,
-          name: "Plan A",
-          operator: "Operator A",
-          price: 10,
-          speed: "10Mbps",
-        },
-        {
-          id: 2,
-          city: "City B",
-          dataCap: 20,
-          name: "Plan B",
-          operator: "Operator B",
-          price: 20,
-          speed: "20Mbps",
-        },
-        {
-          id: 3,
-          city: "City C",
-          dataCap: 30,
-          name: "Plan C",
-          operator: "Operator C",
-          price: 30,
-          speed: "30Mbps",
-        },
-        {
-          id: 4,
-          city: "City D",
-          dataCap: 40,
-          name: "Plan D",
-          operator: "Operator D",
-          price: 40,
-          speed: "40Mbps",
-        },
-      ]);
+      app.planService.plans.push(
+        ...[
+          {
+            id: 1,
+            city: "City A",
+            dataCap: 10,
+            name: "Plan A",
+            operator: "Operator A",
+            price: 10,
+            speed: "10Mbps",
+          },
+          {
+            id: 2,
+            city: "City B",
+            dataCap: 20,
+            name: "Plan B",
+            operator: "Operator B",
+            price: 20,
+            speed: "20Mbps",
+          },
+          {
+            id: 3,
+            city: "City C",
+            dataCap: 30,
+            name: "Plan C",
+            operator: "Operator C",
+            price: 30,
+            speed: "30Mbps",
+          },
+          {
+            id: 4,
+            city: "City D",
+            dataCap: 40,
+            name: "Plan D",
+            operator: "Operator D",
+            price: 40,
+            speed: "40Mbps",
+          },
+        ]
+      );
 
       const putPreferences = async (body: unknown) => {
         await fetch(`${server.url}/plan-preferences`, {

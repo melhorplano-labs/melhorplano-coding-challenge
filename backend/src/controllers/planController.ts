@@ -1,70 +1,82 @@
-import { Request, Response } from "express";
+import { PlanController } from "../contracts/controllers/planController";
+import { PlanFilter, PlanService } from "../contracts/services/planService";
 import { findPreferences } from "../services/planPreferencesService";
-import {
-  PlanSearchFilters,
-  filterPlans,
-  getPlans,
-  getRecommendedPlans,
-  searchPlans,
-} from "../services/planService";
 
-export function allPlans(req: Request, res: Response) {
-  const plans = getPlans()
-    .filter((plan) => !!plan.price)
-    .map((plan) => ({ ...plan, name: plan.name.toUpperCase() }));
+export function createPlanController(planService: PlanService): PlanController {
+  return {
+    async plans(_req) {
+      const result = await planService.findPlans({
+        pageSize: Infinity,
+      });
 
-  res.json(plans);
-}
+      return result.items
+        .filter((plan) => !!plan.price)
+        .map((plan) => ({ ...plan, name: plan.name.toUpperCase() }));
+    },
 
-export function filteredPlans(req: Request, res: Response) {
-  const minSpeed = req.query.minSpeed
-    ? parseInt(req.query.minSpeed as string)
-    : undefined;
-  const maxPrice = req.query.maxPrice
-    ? parseFloat(req.query.maxPrice as string)
-    : undefined;
-  const plans = getPlans();
-  const filtered = filterPlans(plans, { minSpeed, maxPrice });
-  res.json(filtered);
-}
+    async filtered(req) {
+      const { minSpeed, maxPrice } = req.query;
 
-export function planSearch(req: Request, res: Response) {
-  const {
-    minPrice,
-    maxPrice,
-    minDataCap,
-    maxDataCap,
-    operator,
-    city,
-    name,
-    page = "1",
-    pageSize = "5",
-  } = req.query;
+      const filter: PlanFilter = {
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        minSpeed: minSpeed ? Number(minSpeed) : undefined,
+      };
 
-  const filters: PlanSearchFilters = {
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    minDataCap: minDataCap ? Number(minDataCap) : undefined,
-    maxDataCap: maxDataCap ? Number(maxDataCap) : undefined,
-    operator: operator ? String(operator) : undefined,
-    city: city ? String(city) : undefined,
-    name: name ? String(name) : undefined,
+      const { items: plans } = await planService.findPlans({
+        filter,
+        pageSize: Infinity,
+      });
+
+      return plans;
+    },
+
+    async search(req) {
+      const {
+        minPrice,
+        maxPrice,
+        minDataCap,
+        maxDataCap,
+        operator,
+        city,
+        name,
+        page = "1",
+        pageSize = "5",
+      } = req.query;
+
+      const filter: PlanFilter = {
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        minDataCap: minDataCap ? Number(minDataCap) : undefined,
+        maxDataCap: maxDataCap ? Number(maxDataCap) : undefined,
+        operator: operator ? String(operator) : undefined,
+        city: city ? String(city) : undefined,
+        name: name ? String(name) : undefined,
+      };
+
+      const result = await planService.findPlans({
+        filter,
+        page: Number(page),
+        pageSize: Number(pageSize),
+      });
+
+      return { ...result, plans: result.items, items: undefined };
+    },
+
+    async recommended(req) {
+      // TODO: get authenticated user
+      const userId = 1;
+
+      const pageSize = Number(req.query.pageSize ?? 3);
+      const page = Number(req.query.page ?? 1);
+
+      const preferences = await findPreferences(userId);
+      const result = await planService.findRecommendedPlans({
+        preferences,
+        page,
+        pageSize,
+      });
+
+      return { ...result, plans: result.items, items: undefined };
+    },
   };
-
-  const paginated = searchPlans(filters, Number(page), Number(pageSize));
-
-  res.json(paginated);
-}
-
-export async function recommendedPlans(req: Request, res: Response) {
-  // TODO: get authenticated user
-  const userId = 1;
-
-  const pageSize = Number(req.query.pageSize ?? 3);
-  const page = Number(req.query.page ?? 1);
-
-  const preferences = await findPreferences(userId);
-  const result = await getRecommendedPlans(preferences, page, pageSize);
-
-  return res.json(result);
 }

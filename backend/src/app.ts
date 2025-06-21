@@ -1,14 +1,15 @@
 import cors from "cors";
 import express from "express";
+import { PlanController } from "./contracts/controllers/planController";
 import planPreferencesRoutes from "./routes/planPreferencesRoutes";
-import planRoutes from "./routes/planRoutes";
+import { createPlanRoutes } from "./routes/planRoutes";
 
-export const makeApp = () => {
+export const createApp = (planController: PlanController) => {
   const app = express();
   app.use(cors());
   app.use(express.json());
 
-  app.use("/plans", planRoutes);
+  app.use("/plans", createPlanRoutes(planController));
   app.use("/plan-preferences", planPreferencesRoutes);
 
   app.get("/healthcheck", (req, res) => {

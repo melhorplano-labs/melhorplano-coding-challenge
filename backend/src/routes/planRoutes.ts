@@ -1,16 +1,14 @@
 import { Router } from "express";
-import {
-  allPlans,
-  filteredPlans,
-  planSearch,
-  recommendedPlans,
-} from "../controllers/planController";
+import { createRoute } from "../adapters";
+import { PlanController } from "../contracts/controllers/planController";
 
-const router = Router();
+export const createPlanRoutes = (controller: PlanController) => {
+  const router = Router();
 
-router.get("/", allPlans);
-router.get("/filtered", filteredPlans);
-router.get("/search", planSearch);
-router.get("/recommended", recommendedPlans);
+  router.get("/", createRoute(controller.plans));
+  router.get("/filtered", createRoute(controller.filtered));
+  router.get("/search", createRoute(controller.search));
+  router.get("/recommended", createRoute(controller.recommended));
 
-export default router;
+  return router;
+};
