@@ -1,11 +1,16 @@
-name: PR Auto Comment
+name: PR Automation
 
 on:
   pull_request:
     types: [opened]
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   comment:
+    if: github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
       - name: Comentar no PR
@@ -13,10 +18,56 @@ jobs:
         with:
           script: |
             const username = context.payload.pull_request.user.login;
-            const message = `@${username} muito obrigado, recebido. Vamos avaliar e em até 3 dias úteis retornaremos com o resultado.`;
+            const message = `@${username} muito obrigado, recebido. O time @melhorplano-labs/technical-test-evaluators irá avaliar e em até 3 dias úteis retornaremos com o resultado.`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: message
             });
+
+  assign-reviewer:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Atribuir revisor
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              console.log('Could not get pull request from context.');
+              return;
+            }
+            const title = pr.title.toLowerCase();
+            const branch = pr.head.ref.toLowerCase();
+            const prAuthor = pr.user.login;
+
+            let reviewers = new Set();
+
+            if (title.includes('backend') || branch.includes('backend')) {
+              reviewers.add('HenriqueMitsuo');
+              reviewers.add('renanbessa');
+            }
+
+            if (title.includes('frontend') || branch.includes('frontend')) {
+              reviewers.add('ronysfreitas');
+              reviewers.add('renanbessa');
+            }
+
+            if (reviewers.size === 0) {
+              reviewers.add('renanbessa');
+            }
+
+            reviewers.delete(prAuthor);
+
+            const reviewersArray = Array.from(reviewers);
+
+            if (reviewersArray.length > 0) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers: reviewersArray
+              });
+            }
