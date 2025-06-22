@@ -1,5 +1,5 @@
-import { Plan } from "../../../../domain/entities/Plan";
-import { LocalPlanRepository } from "../../../../infra/repositories/LocalPlanRepository";
+import { Plan } from "../../../domain/entities/Plan";
+import { LocalPlanRepository } from "../../../infra/repositories/LocalPlanRepository";
 
 
 describe("Plan Repositories", () => {

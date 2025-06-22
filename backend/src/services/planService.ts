@@ -11,37 +11,31 @@ export class PlanService implements IPlanService {
     this.planRepository = planRepository;
   }
 
-  // Obtém todos os planos disponíveis
   getAllPlans(): Plan[] {
     return this.planRepository.getAllPlans();
   }
 
-  // Verifica se o plano atende à velocidade mínima
   private hasSufficientSpeed(plan: Plan, minimumSpeed?: number): boolean {
     if (!minimumSpeed) return true;
     const speedInMbps = parseInt(plan.speed.replace('Mbps', ''));
     return speedInMbps >= minimumSpeed;
   }
 
-  // Verifica se o plano está dentro do preço máximo
   private isWithinBudget(plan: Plan, maximumPrice?: number): boolean {
     if (!maximumPrice) return true;
     return plan.price <= maximumPrice;
   }
 
-  // Verifica se o plano está na cidade especificada
   private isInCity(plan: Plan, city?: string): boolean {
     if (!city) return true;
     return plan.city.toLowerCase() === city.toLowerCase();
   }
 
-  // Verifica se o plano é da operadora preferida
   private isPreferredOperator(plan: Plan, preferredOperator?: string): boolean {
     if (!preferredOperator) return true;
     return plan.operator.toLowerCase() === preferredOperator.toLowerCase();
   }
 
-  // Verifica se o plano corresponde ao perfil de uso
   private matchesUsageProfile(plan: Plan, usageProfile?: string): boolean {
     if (!usageProfile) return true;
     if (usageProfile === 'light' && plan.dataCap <= DataCapLimit.LightMax) return true;
@@ -54,12 +48,10 @@ export class PlanService implements IPlanService {
     return false;
   }
 
-  // Cria uma cópia do plano se o preço for baixo
   private copyIfLowPrice(plan: Plan): Plan {
     return plan.price < 100 ? { ...plan } : plan;
   }
 
-  // Filtra planos com base nos critérios fornecidos
   filterByCriteria(criteria: PlanFilterCriteria): Plan[] {
     return this.getAllPlans()
       .filter(plan => this.hasSufficientSpeed(plan, criteria.minimumSpeedInMbps))
@@ -70,12 +62,10 @@ export class PlanService implements IPlanService {
       .map(plan => this.copyIfLowPrice(plan));
   }
 
-  // Filtra planos com base em filtros do repositório
   filterByRepositoryFilters(filters: PlanSearchFilters): Plan[] {
     return this.planRepository.filterPlans(filters).map(plan => this.copyIfLowPrice(plan));
   }
 
-  // Busca planos com paginação e ordenação
   searchWithPagination(
     filters: PlanSearchFilters,
     page: number = 1,
@@ -102,14 +92,11 @@ export class PlanService implements IPlanService {
     };
   }
 
-  // Recomenda planos com base nas preferências do usuário
   recommendByPreferences(
     preferences: PlanRecommendationPreferences,
     limit: number = 5
   ): PlanRecommendationResult {
-    if (!preferences.city) {
-      throw new Error('City is a required preference for plan recommendation');
-    }
+    if (!preferences.city) throw new Error('City is a required preference for plan recommendation');
 
     const filteredPlans = this.filterByCriteria({
       city: preferences.city,

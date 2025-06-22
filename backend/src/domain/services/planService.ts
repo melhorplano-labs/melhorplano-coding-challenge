@@ -1,7 +1,6 @@
 import { Plan } from '../entities/Plan';
 import { PlanSearchFilters } from '../repositories/planRepository';
 
-// Interfaces fornecidas
 export interface PaginatedPlans {
   plans: Plan[];
   total: number;

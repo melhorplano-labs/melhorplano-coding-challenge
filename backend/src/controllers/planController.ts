@@ -13,13 +13,11 @@ export class PlanController {
     this.planService = planService;
   }
 
-  // Obtém todos os planos disponíveis
   async allPlans(req: Request, res: Response): Promise<void> {
     const plans = this.planService.getAllPlans();
     res.json(plans);
   }
 
-  // Extrai critérios de filtragem da query
   private extractFilterCriteria(req: Request): PlanFilterCriteria {
     return {
       minimumSpeedInMbps: req.query.minSpeed ? parseInt(req.query.minSpeed as string) : undefined,
@@ -27,14 +25,12 @@ export class PlanController {
     };
   }
 
-  // Filtra planos com base em velocidade mínima e preço máximo
   async filteredPlans(req: Request, res: Response): Promise<void> {
     const criteria = this.extractFilterCriteria(req);
     const filtered = this.planService.filterByCriteria(criteria);
     res.json(filtered);
   }
 
-  // Extrai filtros de busca da query
   private extractSearchFilters(req: Request): PlanSearchFilters {
     const { minPrice, maxPrice, minDataCap, maxDataCap, operator, city, name } = req.query;
     return {
@@ -48,7 +44,6 @@ export class PlanController {
     };
   }
 
-  // Busca planos com paginação
   async planSearch(req: Request, res: Response): Promise<void> {
     const filters = this.extractSearchFilters(req);
     const page = req.query.page ? Number(req.query.page) : 1;
@@ -57,7 +52,6 @@ export class PlanController {
     res.json(paginated);
   }
 
-  // Recomenda planos com base nas preferências
   async recommendPlans(req: Request, res: Response): Promise<void> {
     try {
       const preferences: PlanRecommendationPreferences = req.body;
@@ -77,7 +71,6 @@ export class PlanController {
   }
 }
 
-// Factory para criar o controlador com dependências
 export function createPlanController(): PlanController {
   const planRepository = new LocalPlanRepository(PlanModel.storage);
   const planService = new PlanService(planRepository);
