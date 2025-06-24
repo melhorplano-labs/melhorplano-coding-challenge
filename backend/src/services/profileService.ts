@@ -31,3 +31,7 @@ export const allProfilesMock: Profile[] = [
 export function getProfile(profileName: string): Profile | undefined {
   return allProfilesMock.find((profile) => profile.name == profileName);
 }
+
+export function getProfiles(): Profile[] {
+  return allProfilesMock;
+}

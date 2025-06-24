@@ -1,12 +1,14 @@
 import express from "express";
 import cors from "cors";
 import planRoutes from "./routes/planRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use("/plans", planRoutes);
+app.use("/profiles", profileRoutes);
 
 app.get("/healthcheck", (req, res) => {
   res.status(200).json({ status: "ok" });

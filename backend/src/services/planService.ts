@@ -370,9 +370,10 @@ export function calculatePlanRank(
 }
 
 function maxRankForPreferences(prefs: PlanRankingPreferences): number {
-  return Object.entries(criteriaWeights)
-    .filter(([key]) => prefs[key as keyof PlanRankingPreferences] !== undefined)
-    .reduce((sum, [, weight]) => sum + weight, 0);
+  return Object.entries(prefs).reduce(
+    (sum, [key]) => sum + criteriaWeights[key as keyof typeof criteriaWeights],
+    0,
+  );
 }
 
 interface RankedPlan {
@@ -406,8 +407,14 @@ export function rankPlans(
     sortedPlansCacheKey = cacheKey;
     sortedPlansCache = allPlansMock
       .map((plan) => {
-        const rank = calculatePlanRank(plan, prefs);
-        const percent = ((rank - minRank) / (maxRank - minRank)) * 100;
+        let rank = 0;
+        let percent = 0;
+
+        if (maxRank !== 0) {
+          rank = calculatePlanRank(plan, prefs);
+          percent = ((rank - minRank) / (maxRank - minRank)) * 100;
+        }
+
         const displayPercent = `${percent.toFixed(2)}%`;
 
         return {

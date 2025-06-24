@@ -75,7 +75,6 @@ interface PlanRecommendRequest extends Request {
 }
 
 export function planRecommend(req: PlanRecommendRequest, res: Response) {
-  console.log(req.body);
   let rankedPlans = rankPlans(
     req.body.preferences,
     req.body.page,
