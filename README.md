@@ -52,6 +52,6 @@ O frontend irá rodar por padrão na porta **3000**.
 
 ## Dúvidas?
 
-Consulte a documentação oficial das ferramentas utilizadas (Node.js, Express, Next.js, TypeScript), siga as orientações enviadas pelo time do MelhorPlano.net e qualquer bloqueio, impedimento, dúvidas do processo em si, entre em contato com nosso time `recrutamento@melhorplano.net`
+Consulte a documentação oficial das ferramentas utilizadas (Node.js, Express, Next.js, TypeScript), siga as orientações enviadas pelo time do MelhorPlano.net e qualquer bloqueio, impedimento, dúvidas do processo em si, entre em contato com nosso time `suelem.ferreira@melhorplano.net` e `camila.oliveira@idinheiro.com.br`
 
 O que não te desafia, não te transforma! Boa sorte!
