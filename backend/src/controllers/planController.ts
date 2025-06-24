@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import {
   getPlans,
   handleThing,
+  rankPlans,
   searchPlans,
   PlanSearchFilters,
+  PlanRankingPreferences,
 } from "../services/planService";
 import { Plan } from "../models/plan";
 
@@ -62,4 +64,22 @@ export function planSearch(req: Request, res: Response) {
   const paginated = searchPlans(filters, Number(page), Number(pageSize));
 
   res.json(paginated);
+}
+
+interface PlanRecommendRequest extends Request {
+  body: {
+    preferences: PlanRankingPreferences;
+    page?: number | undefined;
+    pageSize?: number | undefined;
+  };
+}
+
+export function planRecommend(req: PlanRecommendRequest, res: Response) {
+  console.log(req.body);
+  let rankedPlans = rankPlans(
+    req.body.preferences,
+    req.body.page,
+    req.body.pageSize,
+  );
+  res.json(rankedPlans);
 }

@@ -1,4 +1,5 @@
-import { Plan } from "../models/plan";
+import { getSpeedInMbps, Plan } from "../models/plan";
+import { getProfile } from "./profileService";
 
 export const allPlansMock: Plan[] = [
   {
@@ -194,12 +195,12 @@ export function getAllPlans(): Plan[] {
 export function handleThing(
   plans: Plan[],
   minSpeed?: number,
-  maxPrice?: number
+  maxPrice?: number,
 ): Plan[] {
   return plans
     .filter((plan) => {
       if (minSpeed) {
-        const speedValue = parseInt(plan.speed.replace("Mbps", ""));
+        const speedValue = getSpeedInMbps(plan);
         if (speedValue < minSpeed) {
           return false;
         }
@@ -244,7 +245,7 @@ let lastFiltersCache: string | null = null;
 export function searchPlans(
   filters: PlanSearchFilters,
   page: number = 1,
-  pageSize: number = 5
+  pageSize: number = 5,
 ): PaginatedPlans {
   const filtersKey = JSON.stringify(filters);
 
@@ -265,17 +266,17 @@ export function searchPlans(
     if (filters.operator) {
       filtered = filtered.filter(
         (plan) =>
-          plan.operator.toLowerCase() === filters.operator!.toLowerCase()
+          plan.operator.toLowerCase() === filters.operator!.toLowerCase(),
       );
     }
     if (filters.city) {
       filtered = filtered.filter(
-        (plan) => plan.city.toLowerCase() === filters.city!.toLowerCase()
+        (plan) => plan.city.toLowerCase() === filters.city!.toLowerCase(),
       );
     }
     if (filters.name) {
       filtered = filtered.filter((plan) =>
-        plan.name.toLowerCase().includes(filters.name!.toLowerCase())
+        plan.name.toLowerCase().includes(filters.name!.toLowerCase()),
       );
     }
     filteredPlansCache = filtered;
@@ -298,5 +299,137 @@ export function searchPlans(
     page,
     pageSize,
     totalPages,
+  };
+}
+
+export interface PlanRankingPreferences {
+  city?: string;
+  profile?: string;
+  budget?: number;
+  operator?: string;
+}
+
+const criteriaWeights = {
+  city: 100,
+  profile: 50,
+  budget: 10,
+  operator: 1,
+};
+
+const profileAcceptanceRadius = 500;
+const budgetAcceptanceRange = 50;
+
+export function calculatePlanRank(
+  plan: Plan,
+  prefs: PlanRankingPreferences,
+): number {
+  let rank = 0;
+
+  if (prefs.city) {
+    if (plan.city.toLowerCase() === prefs.city?.toLowerCase()) {
+      rank += criteriaWeights.city;
+    } else {
+      rank -= criteriaWeights.city;
+    }
+  }
+
+  if (prefs.profile) {
+    const userProfile = getProfile(prefs.profile);
+    let planSpeed = getSpeedInMbps(plan);
+    const distance = Math.sqrt(
+      (userProfile!.dataCap - plan.dataCap) ** 2 +
+        (userProfile!.speed - planSpeed) ** 2,
+    );
+
+    if (distance <= profileAcceptanceRadius) {
+      rank +=
+        criteriaWeights.profile * (1 - distance / profileAcceptanceRadius);
+    } else {
+      rank -= criteriaWeights.profile;
+    }
+  }
+
+  if (prefs.budget) {
+    const difference = Math.abs(prefs.budget - plan.price);
+    if (difference < budgetAcceptanceRange) {
+      rank += criteriaWeights.budget * (1 - difference / budgetAcceptanceRange);
+    } else {
+      rank -= criteriaWeights.budget;
+    }
+  }
+
+  if (prefs.operator) {
+    if (plan.operator.toLowerCase() === prefs.operator?.toLowerCase()) {
+      rank += criteriaWeights.operator;
+    } else {
+      rank -= criteriaWeights.operator;
+    }
+  }
+
+  return rank;
+}
+
+function maxRankForPreferences(prefs: PlanRankingPreferences): number {
+  return Object.entries(criteriaWeights)
+    .filter(([key]) => prefs[key as keyof PlanRankingPreferences] !== undefined)
+    .reduce((sum, [, weight]) => sum + weight, 0);
+}
+
+interface RankedPlan {
+  rank: number;
+  displayPercent: string;
+  plan: Plan;
+}
+
+let sortedPlansCache: RankedPlan[] | null = null;
+let sortedPlansCacheKey: string | null = null;
+
+interface PaginatedRankedPlans {
+  rankedPlans: RankedPlan[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export function rankPlans(
+  prefs: PlanRankingPreferences,
+  page: number = 1,
+  pageSize: number = 5,
+): PaginatedRankedPlans {
+  const cacheKey = JSON.stringify(prefs);
+
+  if (sortedPlansCacheKey !== cacheKey) {
+    const maxRank = maxRankForPreferences(prefs);
+    const minRank = -maxRank;
+
+    sortedPlansCacheKey = cacheKey;
+    sortedPlansCache = allPlansMock
+      .map((plan) => {
+        const rank = calculatePlanRank(plan, prefs);
+        const percent = ((rank - minRank) / (maxRank - minRank)) * 100;
+        const displayPercent = `${percent.toFixed(2)}%`;
+
+        return {
+          rank,
+          displayPercent,
+          plan,
+        };
+      })
+      .sort((rankedA, rankedB) => rankedB.rank - rankedA.rank);
+  }
+
+  const total = sortedPlansCache ? sortedPlansCache.length : 0;
+  const totalPages = Math.ceil(total / pageSize);
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const rankedPlans = sortedPlansCache!.slice(start, end);
+
+  return {
+    rankedPlans,
+    total,
+    totalPages,
+    page,
+    pageSize,
   };
 }
