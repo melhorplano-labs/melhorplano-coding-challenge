@@ -15,6 +15,10 @@ export default function Menu() {
       <nav>
         <ul>
           <li>
+            <a href="/recommend">RECOMENDAÇÕES</a>
+          </li>
+
+          <li>
             <a href="#">INTERNET</a>
           </li>
           <li>

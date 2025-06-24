@@ -22,3 +22,26 @@ export async function fetchFilteredPlans(params: PlanSearchParams) {
   const { data } = await api.get("/plans/search", { params });
   return data;
 }
+
+export interface PlanRankingPreferences {
+  city?: string;
+  profile?: string;
+  budget?: number;
+  operator?: string;
+}
+
+export interface PlanRecommendParams {
+  preferences: PlanRankingPreferences;
+  page?: number | undefined;
+  pageSize?: number | undefined;
+}
+
+export async function fetchRecommendedPlans(params: PlanRecommendParams) {
+  const { data } = await api.post("/plans/recommend", params);
+  return data;
+}
+
+export async function fetchAllProfiles() {
+  const { data } = await api.get("/profiles/");
+  return data;
+}
