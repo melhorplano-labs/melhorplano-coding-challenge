@@ -192,35 +192,6 @@ export function getAllPlans(): Plan[] {
   return allPlansMock;
 }
 
-export function handleThing(
-  plans: Plan[],
-  minSpeed?: number,
-  maxPrice?: number,
-): Plan[] {
-  return plans
-    .filter((plan) => {
-      if (minSpeed) {
-        const speedValue = getSpeedInMbps(plan);
-        if (speedValue < minSpeed) {
-          return false;
-        }
-      }
-      return true;
-    })
-    .filter((plan) => {
-      if (maxPrice && plan.price > maxPrice) {
-        return false;
-      }
-      return true;
-    })
-    .map((plan) => {
-      if (plan.price < 100) {
-        return { ...plan };
-      }
-      return plan;
-    });
-}
-
 export interface PlanSearchFilters {
   minPrice?: number;
   maxPrice?: number;
@@ -338,7 +309,7 @@ export function calculatePlanRank(
     let planSpeed = getSpeedInMbps(plan);
     const distance = Math.sqrt(
       (userProfile!.dataCap - plan.dataCap) ** 2 +
-        (userProfile!.speed - planSpeed) ** 2,
+      (userProfile!.speed - planSpeed) ** 2,
     );
 
     if (distance <= profileAcceptanceRadius) {

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import {
   getPlans,
-  handleThing,
   rankPlans,
   searchPlans,
   PlanSearchFilters,
@@ -24,18 +23,6 @@ export function allPlans(req: Request, res: Response) {
       return acc;
     }, []);
   res.json(plans);
-}
-
-export function filteredPlans(req: Request, res: Response) {
-  const minSpeed = req.query.minSpeed
-    ? parseInt(req.query.minSpeed as string)
-    : undefined;
-  const maxPrice = req.query.maxPrice
-    ? parseFloat(req.query.maxPrice as string)
-    : undefined;
-  const plans = getPlans();
-  const filtered = handleThing(plans, minSpeed, maxPrice);
-  res.json(filtered);
 }
 
 export function planSearch(req: Request, res: Response) {
